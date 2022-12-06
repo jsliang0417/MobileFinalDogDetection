@@ -3,16 +3,26 @@ package com.mobile.dogbreeddetection
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.graphics.drawable.BitmapDrawable
 import android.media.ExifInterface
 import android.os.Bundle
+import android.util.Base64
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.mobile.dogbreeddetection.RetrofitAPI.RetrofitDataSource
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 
 
 class AnalysisActivity : AppCompatActivity() {
 
+
+    //retrofit
+    private lateinit var dogBreedResource: RetrofitDataSource
 
     //component
     private lateinit var imageView: ImageView
@@ -21,11 +31,14 @@ class AnalysisActivity : AppCompatActivity() {
 
     //variable
     private var photoPath: String = ""
+    private var base64String: String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_analysis)
+
+        dogBreedResource = RetrofitDataSource(applicationContext)
 
         imageView = findViewById(R.id.analysisImage)
         analyzeButton = findViewById(R.id.analyze)
@@ -35,11 +48,51 @@ class AnalysisActivity : AppCompatActivity() {
 
         setImage(photoPath)
 
+
+
+
+
+
+
+
+
+
         analyzeButton.setOnClickListener {
             Toast.makeText(this, "Analyzing...", Toast.LENGTH_LONG).show()
+            val bitmap = convertToBitMap()
+            val base64String = convertToBase64(bitmap)
+            println(base64String)
             scrollInformation.visibility = View.VISIBLE
             analyzeButton.visibility = View.INVISIBLE
         }
+    }
+
+
+    private fun convertToBitMap(): Bitmap {
+        val drawable = imageView.drawable as BitmapDrawable
+        return drawable.bitmap
+    }
+
+    private fun getResizedBitmap(image: Bitmap): Bitmap {
+        var width = image.width
+        var height = image.height
+        val bitmapRatio = width.toFloat() / height.toFloat()
+        if (bitmapRatio > 1) {
+            width = 224
+            height = (width / bitmapRatio).toInt()
+        } else {
+            height = 224
+            width = (height * bitmapRatio).toInt()
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true)
+    }
+
+    private fun convertToBase64(bitmap: Bitmap): String {
+        val stream = ByteArrayOutputStream()
+        val newBitmap = getResizedBitmap(bitmap)
+        newBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+        val image = stream.toByteArray()
+        return Base64.encodeToString(image, Base64.DEFAULT).replace('/', '_')
     }
 
 
@@ -56,11 +109,11 @@ class AnalysisActivity : AppCompatActivity() {
         val imageHeight: Int = bitMapOptions.outHeight
         //println("Image View Width: $imageViewWidth, Image View Height: $imageViewHeight")
         //scale down the image to fit in image view
-        val scaleFactor =
-            Math.max(1, Math.min(imageWidth / imageViewWidth, imageHeight / imageViewHeight))
+        //val scaleFactor =
+            //Math.max(1, Math.min(imageWidth / imageViewWidth, imageHeight / imageViewHeight))
         //Decode image file into a Bitmap sized to fill the view
         bitMapOptions.inJustDecodeBounds = false
-        bitMapOptions.inSampleSize = scaleFactor
+        //bitMapOptions.inSampleSize = scaleFactor
         var bitMap = BitmapFactory.decodeFile(locationImageURI, bitMapOptions)
         bitMap = determineAngle(locationImageURI, bitMap)
         imageView.setImageBitmap(bitMap)
