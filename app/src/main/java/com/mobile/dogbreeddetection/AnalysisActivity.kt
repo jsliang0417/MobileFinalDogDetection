@@ -7,6 +7,7 @@ import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
 import android.media.ExifInterface
 import android.os.Bundle
+import android.os.Handler
 import android.util.Base64
 import android.util.Log
 import android.view.MenuItem
@@ -40,7 +41,7 @@ class AnalysisActivity : AppCompatActivity() {
     private lateinit var dogBreedDescription: TextView
     private lateinit var dogBreedOrigin: TextView
     private lateinit var dogBreedLifeSpan: TextView
-    //private lateinit var loadingCircle: RelativeLayout
+    private lateinit var loadingCircle: RelativeLayout
 
     //variable
     private var photoPath: String = ""
@@ -63,8 +64,7 @@ class AnalysisActivity : AppCompatActivity() {
         dogBreedDescription = findViewById(R.id.breed_description)
         dogBreedOrigin = findViewById(R.id.origin)
         dogBreedLifeSpan = findViewById(R.id.life_span)
-        //loadingCircle = findViewById(R.id.loadingPanel)
-
+        loadingCircle = findViewById(R.id.loadingPanel)
 
         photoPath = intent.getStringExtra("URI").toString()
 
@@ -72,16 +72,18 @@ class AnalysisActivity : AppCompatActivity() {
 
 
         analyzeButton.setOnClickListener {
-            Toast.makeText(this, "Analyzing...", Toast.LENGTH_LONG).show()
+            loadingCircle.visibility = View.VISIBLE
             analyzeButton.text = "Analyzing..."
             val bitmap = convertToBitMap()
             val uri = convertToBase64(bitmap)
             findBreedRetrofit(uri)
-            //loadingCircle.visibility = View.VISIBLE;
-            Thread.sleep(1500)
-            //loadingCircle.visibility = View.INVISIBLE;
-            scrollInformation.visibility = View.VISIBLE
-            analyzeButton.visibility = View.INVISIBLE
+            val handler = Handler()
+            handler.postDelayed({
+                // do something after 1000ms
+                loadingCircle.visibility = View.GONE
+                scrollInformation.visibility = View.VISIBLE
+                analyzeButton.visibility = View.INVISIBLE
+            }, 1500)
         }
 
         analysisActivityActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -89,6 +91,7 @@ class AnalysisActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     private fun findBreedRetrofit(uri: String) {
+        //loadingCircle.visibility = View.VISIBLE
         CoroutineScope(Dispatchers.IO).launch {
             val dogBreed = dogBreedResource.getDogBreed(uri)
             withContext(Dispatchers.IO) {
