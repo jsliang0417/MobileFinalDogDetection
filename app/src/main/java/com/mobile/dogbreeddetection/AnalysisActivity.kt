@@ -4,16 +4,23 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.media.ExifInterface
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.ImageView
+import android.view.View
+import android.view.ViewGroup
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+
 
 class AnalysisActivity : AppCompatActivity() {
 
-    private lateinit var imageView: ImageView
-    private var photoPath: String = ""
 
+    //component
+    private lateinit var imageView: ImageView
+    private lateinit var analyzeButton: Button
+    private lateinit var scrollInformation: ScrollView
+
+    //variable
+    private var photoPath: String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,15 +28,19 @@ class AnalysisActivity : AppCompatActivity() {
         setContentView(R.layout.activity_analysis)
 
         imageView = findViewById(R.id.analysisImage)
+        analyzeButton = findViewById(R.id.analyze)
+        scrollInformation = findViewById(R.id.infomationScrollView)
 
         photoPath = intent.getStringExtra("URI").toString()
 
         setImage(photoPath)
-        Log.d("photoPath in analysis", photoPath)
+
+        analyzeButton.setOnClickListener {
+            Toast.makeText(this, "Analyzing...", Toast.LENGTH_LONG).show()
+            scrollInformation.visibility = View.VISIBLE
+            analyzeButton.visibility = View.INVISIBLE
+        }
     }
-
-
-
 
 
     private fun setImage(locationImageURI: String) {
