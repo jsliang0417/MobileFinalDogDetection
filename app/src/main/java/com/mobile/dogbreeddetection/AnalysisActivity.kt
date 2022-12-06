@@ -1,5 +1,6 @@
 package com.mobile.dogbreeddetection
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -34,6 +35,12 @@ class AnalysisActivity : AppCompatActivity() {
     private lateinit var analyzeButton: Button
     private lateinit var scrollInformation: ScrollView
     private lateinit var dogBreedResult: TextView
+    private lateinit var dogBreedConfidenceScore: TextView
+    private lateinit var dogBreedType: TextView
+    private lateinit var dogBreedDescription: TextView
+    private lateinit var dogBreedOrigin: TextView
+    private lateinit var dogBreedLifeSpan: TextView
+    //private lateinit var loadingCircle: RelativeLayout
 
     //variable
     private var photoPath: String = ""
@@ -51,6 +58,13 @@ class AnalysisActivity : AppCompatActivity() {
         analyzeButton = findViewById(R.id.analyze)
         scrollInformation = findViewById(R.id.infomationScrollView)
         dogBreedResult = findViewById(R.id.dog_type)
+        dogBreedConfidenceScore = findViewById(R.id.confidence_score)
+        dogBreedType = findViewById(R.id.breed_type)
+        dogBreedDescription = findViewById(R.id.breed_description)
+        dogBreedOrigin = findViewById(R.id.origin)
+        dogBreedLifeSpan = findViewById(R.id.life_span)
+        //loadingCircle = findViewById(R.id.loadingPanel)
+
 
         photoPath = intent.getStringExtra("URI").toString()
 
@@ -59,9 +73,13 @@ class AnalysisActivity : AppCompatActivity() {
 
         analyzeButton.setOnClickListener {
             Toast.makeText(this, "Analyzing...", Toast.LENGTH_LONG).show()
+            analyzeButton.text = "Analyzing..."
             val bitmap = convertToBitMap()
             val uri = convertToBase64(bitmap)
             findBreedRetrofit(uri)
+            //loadingCircle.visibility = View.VISIBLE;
+            Thread.sleep(1500)
+            //loadingCircle.visibility = View.INVISIBLE;
             scrollInformation.visibility = View.VISIBLE
             analyzeButton.visibility = View.INVISIBLE
         }
@@ -69,14 +87,23 @@ class AnalysisActivity : AppCompatActivity() {
         analysisActivityActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
+    @SuppressLint("SetTextI18n")
     private fun findBreedRetrofit(uri: String) {
         CoroutineScope(Dispatchers.IO).launch {
             val dogBreed = dogBreedResource.getDogBreed(uri)
             withContext(Dispatchers.IO) {
                 try {
-                    dogBreedResult.text = dogBreed?.dog_type.toString()
 
-                    Log.d("type", dogBreed?.dog_type.toString())
+                    dogBreedResult.text = dogBreed?.dog_type.toString()
+                    dogBreedConfidenceScore.text = dogBreed?.confidence_score.toString()
+                    dogBreedType.text = dogBreed?.breed_facts?.get(0)?.breedType.toString()
+                    dogBreedOrigin.text = dogBreed?.breed_facts?.get(0)?.origin.toString()
+                    println("test: ${dogBreed?.breed_facts?.get(0)?.origin.toString()}")
+                    val minLifeSpan: String = dogBreed?.breed_facts?.get(0)?.minLifeSpan.toString()
+                    val maxLifeSpan: String = dogBreed?.breed_facts?.get(0)?.maxLifeSpan.toString()
+                    dogBreedLifeSpan.text = "$minLifeSpan ~ $maxLifeSpan years"
+                    dogBreedDescription.text = dogBreed?.breed_facts?.get(0)?.breedDescription.toString()
+                    //Log.d("origin", dogBreed?.breed_facts?.get(0)?.origin.toString())
                 } catch (e: HttpException) {
 
                 } catch (e: Throwable) {

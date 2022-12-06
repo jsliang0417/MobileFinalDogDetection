@@ -10,11 +10,27 @@
         android:id="@+id/analysisImage"
         android:layout_width="270dp"
         android:layout_height="256dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="4dp"
         android:scaleType="fitXY"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@tools:sample/avatars"/>
+
+<!--    <RelativeLayout-->
+<!--        android:id="@+id/loadingPanel"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_marginTop="100dp"-->
+<!--        android:visibility="invisible"-->
+<!--        android:gravity="center" >-->
+
+<!--        <ProgressBar-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:indeterminate="true" />-->
+<!--    </RelativeLayout>-->
 
     <Button
         android:id="@+id/analyze"
@@ -30,9 +46,8 @@
 
     <ScrollView
         android:id="@+id/infomationScrollView"
-        android:layout_width="358dp"
-        android:layout_height="346dp"
-        android:layout_marginTop="0dp"
+        android:layout_width="363dp"
+        android:layout_height="381dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -54,7 +69,7 @@
                 android:lines="1"
                 android:text="Dog Type:"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="@color/black"
+                android:textColor="#2081E6"
                 android:textSize="25dp" />
 
             <TextView
@@ -75,7 +90,7 @@
                 android:lines="1"
                 android:text="Confidence Score:"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="@color/black"
+                android:textColor="#2081E6"
                 android:textSize="25dp" />
 
             <TextView
@@ -96,7 +111,7 @@
                 android:lines="1"
                 android:text="Breed Type:"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="@color/black"
+                android:textColor="#2081E6"
                 android:textSize="25dp" />
 
             <TextView
@@ -109,26 +124,6 @@
                 android:textColor="@color/black"
                 android:textSize="15dp" />
 
-            <TextView
-                android:id="@+id/head4"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:lines="1"
-                android:text="Breed Description:"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="@color/black"
-                android:textSize="25dp" />
-
-            <TextView
-                android:id="@+id/breed_description"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Here is an example of what kind of text might go here"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="@color/black"
-                android:textSize="15dp" />
 
             <TextView
                 android:id="@+id/head5"
@@ -136,13 +131,13 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:lines="1"
-                android:text="Fur Color:"
+                android:text="Origin:"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="@color/black"
+                android:textColor="#2081E6"
                 android:textSize="25dp" />
 
             <TextView
-                android:id="@+id/fur_color"
+                android:id="@+id/origin"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -157,13 +152,13 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:lines="1"
-                android:text="Size:"
+                android:text="Life Span:"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="@color/black"
+                android:textColor="#2081E6"
                 android:textSize="25dp" />
 
             <TextView
-                android:id="@+id/size"
+                android:id="@+id/life_span"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -178,15 +173,15 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:lines="1"
-                android:text="Life Span:"
+                android:text="Breed Description:"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="@color/black"
+                android:textColor="#2081E6"
                 android:textSize="25dp" />
 
             <TextView
-                android:id="@+id/life_span"
+                android:id="@+id/breed_description"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="128dp"
                 android:layout_weight="1"
                 android:text="Here is an example of what kind of text might go here"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
