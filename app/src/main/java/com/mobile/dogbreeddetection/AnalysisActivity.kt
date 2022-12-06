@@ -7,6 +7,8 @@ import android.graphics.drawable.BitmapDrawable
 import android.media.ExifInterface
 import android.os.Bundle
 import android.util.Base64
+import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -15,6 +17,9 @@ import com.mobile.dogbreeddetection.RetrofitAPI.RetrofitDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.w3c.dom.Text
+import retrofit2.HttpException
 import java.io.ByteArrayOutputStream
 
 
@@ -28,42 +33,56 @@ class AnalysisActivity : AppCompatActivity() {
     private lateinit var imageView: ImageView
     private lateinit var analyzeButton: Button
     private lateinit var scrollInformation: ScrollView
+    private lateinit var dogBreedResult: TextView
 
     //variable
     private var photoPath: String = ""
-    private var base64String: String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_analysis)
 
+        val analysisActivityActionBar = supportActionBar
+
         dogBreedResource = RetrofitDataSource(applicationContext)
 
         imageView = findViewById(R.id.analysisImage)
         analyzeButton = findViewById(R.id.analyze)
         scrollInformation = findViewById(R.id.infomationScrollView)
+        dogBreedResult = findViewById(R.id.dog_type)
 
         photoPath = intent.getStringExtra("URI").toString()
 
         setImage(photoPath)
 
 
-
-
-
-
-
-
-
-
         analyzeButton.setOnClickListener {
             Toast.makeText(this, "Analyzing...", Toast.LENGTH_LONG).show()
             val bitmap = convertToBitMap()
-            val base64String = convertToBase64(bitmap)
-            println(base64String)
+            val uri = convertToBase64(bitmap)
+            findBreedRetrofit(uri)
             scrollInformation.visibility = View.VISIBLE
             analyzeButton.visibility = View.INVISIBLE
+        }
+
+        analysisActivityActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun findBreedRetrofit(uri: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val dogBreed = dogBreedResource.getDogBreed(uri)
+            withContext(Dispatchers.IO) {
+                try {
+                    dogBreedResult.text = dogBreed?.dog_type.toString()
+
+                    Log.d("type", dogBreed?.dog_type.toString())
+                } catch (e: HttpException) {
+
+                } catch (e: Throwable) {
+
+                }
+            }
         }
     }
 
@@ -107,11 +126,7 @@ class AnalysisActivity : AppCompatActivity() {
         BitmapFactory.decodeFile(locationImageURI, bitMapOptions)
         val imageWidth: Int = bitMapOptions.outWidth
         val imageHeight: Int = bitMapOptions.outHeight
-        //println("Image View Width: $imageViewWidth, Image View Height: $imageViewHeight")
-        //scale down the image to fit in image view
-        //val scaleFactor =
-            //Math.max(1, Math.min(imageWidth / imageViewWidth, imageHeight / imageViewHeight))
-        //Decode image file into a Bitmap sized to fill the view
+
         bitMapOptions.inJustDecodeBounds = false
         //bitMapOptions.inSampleSize = scaleFactor
         var bitMap = BitmapFactory.decodeFile(locationImageURI, bitMapOptions)
@@ -143,6 +158,16 @@ class AnalysisActivity : AppCompatActivity() {
         val matrix = Matrix()
         matrix.postRotate(angle.toFloat())
         return Bitmap.createBitmap(bitMap, 0, 0, bitMap.width, bitMap.height, matrix, true)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
 }
